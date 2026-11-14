@@ -61,7 +61,7 @@ public class PageController {
     @GetMapping("/tickets")
     public String myTickets(Authentication authentication, Model model) {
         model.addAttribute("tickets", tickets.findForUser(authentication.getName()));
-        model.addAttribute("isAdmin", isAdmin(authentication));
+        model.addAttribute("isStaff", isStaff(authentication));
         model.addAttribute("adminView", false);
         return "tickets";
     }
@@ -84,25 +84,24 @@ public class PageController {
 
     @GetMapping("/tickets/{id}")
     public String ticket(@PathVariable Long id, Authentication authentication, Model model) {
-        boolean admin = authentication.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
-        model.addAttribute("ticket", tickets.findVisibleTicket(id, authentication.getName(), admin));
+        boolean staff = isStaff(authentication);
+        model.addAttribute("ticket", tickets.findVisibleTicket(id, authentication.getName(), staff));
         model.addAttribute("statuses", TicketStatus.values());
-        model.addAttribute("admin", admin);
+        model.addAttribute("staff", staff);
         return "ticket-detail";
     }
 
     @GetMapping("/admin/tickets")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('AGENT', 'ADMIN')")
     public String allTickets(Model model) {
         model.addAttribute("tickets", tickets.findAll());
-        model.addAttribute("isAdmin", true);
+        model.addAttribute("isStaff", true);
         model.addAttribute("adminView", true);
         return "tickets";
     }
 
     @PostMapping("/admin/tickets/{id}/status")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('AGENT', 'ADMIN')")
     public String updateStatus(@PathVariable Long id, @RequestParam TicketStatus status,
                                RedirectAttributes redirectAttributes) {
         tickets.updateStatus(id, status);
@@ -110,8 +109,9 @@ public class PageController {
         return "redirect:/tickets/" + id;
     }
 
-    private boolean isAdmin(Authentication authentication) {
+    private boolean isStaff(Authentication authentication) {
         return authentication.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+                .anyMatch(authority -> "ROLE_AGENT".equals(authority.getAuthority())
+                        || "ROLE_ADMIN".equals(authority.getAuthority()));
     }
 }

@@ -35,6 +35,9 @@ public class UserAccount implements UserDetails {
     @Column(nullable = false, length = 20)
     private Role role;
 
+    @Column(nullable = false)
+    private boolean enabled = true;
+
     protected UserAccount() {
     }
 
@@ -57,6 +60,14 @@ public class UserAccount implements UserDetails {
         return role;
     }
 
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
@@ -70,5 +81,10 @@ public class UserAccount implements UserDetails {
     @Override
     public String getUsername() {
         return username;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
     }
 }

@@ -28,4 +28,36 @@ public class UserAccountService {
     public static String normalizeUsername(String username) {
         return username.trim().toLowerCase(Locale.ROOT);
     }
+
+    @Transactional
+    public void createByAdmin(String username, String displayName, String rawPassword, Role role) {
+        String normalizedUsername = normalizeUsername(username);
+
+        if (users.existsByUsername(normalizedUsername)) {
+            throw new UsernameAlreadyExistsException();
+        }
+
+        users.save(new UserAccount(
+                normalizedUsername,
+                passwordEncoder.encode(rawPassword),
+                displayName.trim(),
+                role
+        ));
+    }
+
+    @Transactional
+    public void changeRole(Long userId, Role role) {
+        UserAccount user = users.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Användaren hittades inte."));
+
+        user.setRole(role);
+    }
+
+    @Transactional
+    public void setEnabled(Long userId, boolean enabled) {
+        UserAccount user = users.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Användaren hittades inte."));
+
+        user.setEnabled(enabled);
+    }
 }

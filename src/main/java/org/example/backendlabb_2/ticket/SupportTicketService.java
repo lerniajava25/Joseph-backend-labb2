@@ -28,9 +28,9 @@ public class SupportTicketService {
     }
 
     @Transactional(readOnly = true)
-    public SupportTicket findVisibleTicket(Long id, String username, boolean admin) {
+    public SupportTicket findVisibleTicket(Long id, String username, boolean staff) {
         SupportTicket ticket = tickets.findById(id).orElseThrow(() -> new TicketNotFoundException(id));
-        if (!admin && !ticket.getOwner().getUsername().equals(username)) {
+        if (!staff && !ticket.getOwner().getUsername().equals(username)) {
             throw new TicketAccessDeniedException();
         }
         return ticket;

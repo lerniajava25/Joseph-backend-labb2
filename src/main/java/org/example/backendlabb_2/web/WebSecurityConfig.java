@@ -24,6 +24,9 @@ public class WebSecurityConfig {
         return http
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/", "/register", "/css/**", "/error").permitAll()
+                        .requestMatchers("/admin/users/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/tickets", "/admin/tickets/**", "/agent/**")
+                        .hasAnyRole("AGENT", "ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .formLogin(form -> form.loginPage("/login").defaultSuccessUrl("/tickets", true).permitAll())
