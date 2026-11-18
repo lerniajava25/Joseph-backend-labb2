@@ -83,6 +83,10 @@ public class UserAccount implements UserDetails {
         return username;
     }
 
+    public boolean isAccountEnabled() {
+        return enabled;
+    }
+
     @Override
     public boolean isEnabled() {
         return enabled;

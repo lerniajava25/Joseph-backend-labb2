@@ -4,6 +4,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Locale;
 
 @Service
@@ -27,6 +28,11 @@ public class UserAccountService {
 
     public static String normalizeUsername(String username) {
         return username.trim().toLowerCase(Locale.ROOT);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserAccount> findAll() {
+        return users.findAll();
     }
 
     @Transactional

@@ -39,6 +39,10 @@ public class SupportTicket {
     @JoinColumn(name = "owner_id", nullable = false)
     private UserAccount owner;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_agent_id")
+    private UserAccount assignedAgent;
+
     protected SupportTicket() {
     }
 
@@ -72,6 +76,10 @@ public class SupportTicket {
 
     public UserAccount getOwner() {
         return owner;
+    }
+
+    public UserAccount getAssignedAgent() {
+        return assignedAgent;
     }
 
     public void setStatus(TicketStatus status) {
