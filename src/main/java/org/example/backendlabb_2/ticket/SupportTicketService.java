@@ -6,6 +6,7 @@ import org.example.backendlabb_2.user.Role;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -68,6 +69,7 @@ public class SupportTicketService {
         UserAccount author = users.findByUsername(username)
                 .orElseThrow(() -> new IllegalStateException("Authenticated user no longer exists"));
         comments.save(new TicketComment(normalizedContent, ticket, author));
+        ticket.touch();
     }
 
     @Transactional
@@ -84,7 +86,7 @@ public class SupportTicketService {
             throw new TicketAccessDeniedException();
         }
 
-        int claimed = tickets.claimIfUnassigned(ticketId, agent);
+        int claimed = tickets.claimIfUnassigned(ticketId, agent, LocalDateTime.now());
         if (claimed == 1) {
             return true;
         }

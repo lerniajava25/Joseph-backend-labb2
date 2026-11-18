@@ -10,6 +10,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import org.example.backendlabb_2.user.UserAccount;
 
@@ -35,6 +37,9 @@ public class SupportTicket {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Column
+    private LocalDateTime lastModified;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "owner_id", nullable = false)
     private UserAccount owner;
@@ -50,8 +55,7 @@ public class SupportTicket {
         this.title = title;
         this.description = description;
         this.owner = owner;
-        this.status = TicketStatus.OPEN;
-        this.createdAt = LocalDateTime.now();
+        this.status = TicketStatus.NEW;
     }
 
     public Long getId() {
@@ -74,6 +78,10 @@ public class SupportTicket {
         return createdAt;
     }
 
+    public LocalDateTime getLastModified() {
+        return lastModified;
+    }
+
     public UserAccount getOwner() {
         return owner;
     }
@@ -82,7 +90,25 @@ public class SupportTicket {
         return assignedAgent;
     }
 
+    public void touch() {
+        this.lastModified = LocalDateTime.now();
+    }
+
     public void setStatus(TicketStatus status) {
         this.status = status;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        if (createdAt == null) {
+            createdAt = now;
+        }
+        lastModified = now;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        lastModified = LocalDateTime.now();
     }
 }

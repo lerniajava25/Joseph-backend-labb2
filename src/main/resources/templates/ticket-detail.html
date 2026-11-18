@@ -22,12 +22,16 @@
         <div class="detail-title">
             <h1 th:text="${ticket.title}">Kan inte logga in</h1>
             <span class="badge"
-                  th:classappend="${ticket.status.name() == 'RESOLVED'} ? ' done' : (${ticket.status.name() == 'IN_PROGRESS'} ? ' progress' : '')"
+                  th:classappend="${ticket.status.name() == 'RESOLVED' or ticket.status.name() == 'CLOSED'} ? ' done' : (${ticket.status.name() == 'IN_PROGRESS' or ticket.status.name() == 'WAITING_FOR_USER'} ? ' progress' : '')"
                   th:text="${ticket.status.label}">Öppen</span>
         </div>
         <p class="muted"
            th:text="${'Skapat ' + #temporals.format(ticket.createdAt, 'yyyy-MM-dd HH:mm') + ' · ' + ticket.owner.displayName}">
             Skapat datum
+        </p>
+        <p class="muted" th:if="${ticket.lastModified != null}"
+           th:text="${'Senast ändrat ' + #temporals.format(ticket.lastModified, 'yyyy-MM-dd HH:mm')}">
+            Senast ändrat
         </p>
         <article class="description" th:text="${ticket.description}">Beskrivning</article>
 

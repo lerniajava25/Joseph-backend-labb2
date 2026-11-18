@@ -1,9 +1,12 @@
 package org.example.backendlabb_2.ticket;
 
 public enum TicketStatus {
+    NEW("Ny"),
     OPEN("Öppen"),
     IN_PROGRESS("Pågår"),
-    RESOLVED("Löst");
+    WAITING_FOR_USER("Väntar på användare"),
+    RESOLVED("Löst"),
+    CLOSED("Stängt");
 
     private final String label;
 

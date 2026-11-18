@@ -22,8 +22,9 @@ public interface SupportTicketRepository extends JpaRepository<SupportTicket, Lo
     @Modifying
     @Query("""
             update SupportTicket ticket
-            set ticket.assignedAgent = :agent
+            set ticket.assignedAgent = :agent, ticket.lastModified = :modifiedAt
             where ticket.id = :ticketId and ticket.assignedAgent is null
             """)
-    int claimIfUnassigned(@Param("ticketId") Long ticketId, @Param("agent") UserAccount agent);
+    int claimIfUnassigned(@Param("ticketId") Long ticketId, @Param("agent") UserAccount agent,
+                          @Param("modifiedAt") java.time.LocalDateTime modifiedAt);
 }

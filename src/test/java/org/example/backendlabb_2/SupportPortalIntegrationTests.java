@@ -166,7 +166,24 @@ class SupportPortalIntegrationTests {
                 .andExpect(status().is3xxRedirection());
         mockMvc.perform(get(ticketUrl).session(adminSession))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Pågår")));
+                .andExpect(content().string(containsString("Pågår")))
+                .andExpect(content().string(containsString("Senast ändrat")));
+        mockMvc.perform(post("/admin/tickets/" + ticketId + "/status")
+                        .session(adminSession)
+                        .with(csrf())
+                        .param("status", "WAITING_FOR_USER"))
+                .andExpect(status().is3xxRedirection());
+        mockMvc.perform(get(ticketUrl).session(adminSession))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Väntar på användare")));
+        mockMvc.perform(post("/admin/tickets/" + ticketId + "/status")
+                        .session(adminSession)
+                        .with(csrf())
+                        .param("status", "CLOSED"))
+                .andExpect(status().is3xxRedirection());
+        mockMvc.perform(get(ticketUrl).session(adminSession))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Stängt")));
     }
 
     @Test
